@@ -16,7 +16,7 @@ class Settings(BaseSettings):
         api_main_path has to begin with / and finish without /
         
         Example:
-            /feddit-api-main
+            /subfeddit-api
         """
         if v[0] != '/':
             v = '/' + v
