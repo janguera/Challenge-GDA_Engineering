@@ -46,7 +46,7 @@ async def get_subfeddit_comments(
 
     Parameters:
     - **subfeddit** (int): The ID of the subfeddit to fetch comments from.
-    - **time_range** (int, optional): The time range filter in minutes. If provided, comments will be filtered based on this range before applying the limit.
+    - **time_range** (int, optional): The time range filter in minutes. If provided, comments will be filtered based on this range.
     - **sorted_results** (bool, optional): If true, comments will be sorted by their polarity score.
     - **comments_limit** (int, optional): The maximum number of comments to return. Default is 25.
 
@@ -62,7 +62,7 @@ async def get_subfeddit_comments(
     if subfeddit > number_of_subfeddits or subfeddit < 0:
         raise HTTPException(status_code=400, detail='Subfeddit does not exist')
     
-    if time_range is None or time_range < 0:
+    if time_range is not None and time_range < 0:
         raise HTTPException(status_code=400, detail='Time range must be greater than 0')
     
     if comments_limit < 0:
