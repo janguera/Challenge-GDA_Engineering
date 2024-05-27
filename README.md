@@ -33,12 +33,12 @@ There are 3 subfeddits available. For each subfeddit there are more than 20,000 
 
 # Comment Analysis API Execution
 
-In order to run the comment analysis API locally, you can execute the `docker-compose.yml` file as specified at the beginning of the file. It should be available in [http://localhost:8000/subfeddit-api/]
+In order to run the comment analysis API locally, you can execute the `docker-compose.yml` file as specified at the beginning of the file. It should be available in [http://localhost:8000/subfeddit-api/](http://localhost:8000/subfeddit-api/)
 
 An additional image has been added with the solution, so the database, the Feddit API and the comment analysis API will run under the same host.
 
 # Comment Analysis API Specification
-Please visit [http://localhost:8000/subfeddit-api/docs] for the documentation of available endpoints and examples of the responses.
+Please visit [http://localhost:8000/subfeddit-api/docs](http://localhost:8000/subfeddit-api/docs) for the documentation of available endpoints and examples of the responses.
 
 There are 5 variables to be set in the API, being only the `subfeddit` id mandatory:
 
