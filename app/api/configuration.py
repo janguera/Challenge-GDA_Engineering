@@ -7,7 +7,7 @@ from fastapi.responses import JSONResponse
 
 class Settings(BaseSettings):
     middleware_host: str
-    api_main_path: str = '/subfeddit-api-main'
+    api_main_path: str = '/subfeddit-api'
     api_version: str = '/api/v1'
 
     @validator('api_main_path')

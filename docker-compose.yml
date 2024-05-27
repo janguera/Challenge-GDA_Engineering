@@ -30,3 +30,10 @@ services:
       - "db:db"
     depends_on:
       - db
+  comment_classification:
+    image: janguera/comment_classification
+    container_name: comment_classification
+    ports:
+      - "8000:8000"    
+    restart: unless-stopped
+    network_mode: host

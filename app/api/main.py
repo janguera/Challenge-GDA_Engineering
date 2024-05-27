@@ -1,22 +1,20 @@
-from typing import List, Dict, Literal, Any #, Union
+from typing import List, Dict
 import datetime
 import pandas as pd
 import requests
 from fastapi import FastAPI, APIRouter
 
-from src.utils import api_parameters
-from src.api.configuration import ORJSONResponse, Settings
-
+from app.api.configuration import ORJSONResponse, Settings
+from app.api.sentiment_analysis.polarity_score import get_polarity, classify_polarity
 
 ROOT_PATH=Settings().api_main_path
 prefix_router = APIRouter(prefix=ROOT_PATH)
-print('API path: ', ROOT_PATH)
-
 
 host = Settings().middleware_host
 host = host if host[-1] != "/" else host[:-1]
-host = host + Settings().api_main_path + Settings().api_version
+host = host + Settings().api_version
 
+print('Initialising comment classification API')
 
 app = FastAPI(
                 openapi_url=f'{ROOT_PATH}/openapi.json',
@@ -29,8 +27,7 @@ app = FastAPI(
 @prefix_router.get('/subfeddit_comments')
 async def get_subfeddit_comments(
         subfeddit: str,
-        start_date: datetime.date = None,
-        end_date: datetime.date = None,
+        time_range: int = None,
         sorted_results: bool = False,
         comments_limit: int = 25) -> List[Dict]:
     """
@@ -40,18 +37,12 @@ async def get_subfeddit_comments(
         - The text of the comment
         - The polarity score and the classification of the comment (positive/negative) based on that score
     The following variables are optional based on the request:
-        - Date filter if the start and end dates are provided
-        - Sorted by polarity if specified
         - Limit number of comments
+        - Time range filter if the time_range is provided (in minutes, will be filtered from the limit number of comments)
+        - Sorted by polarity if specified
     """
 
-    subfeddit_obj   = api_parameters.ParamSubfeddit(id=subfeddit)
-
-    assert subfeddit_obj is not None
-
-    dateRange_obj   = api_parameters.DateRange(start_date=start_date, end_date=end_date)
-
-    payload = {'subfeddit_id': subfeddit_obj.id, 
+    payload = {'subfeddit_id': subfeddit, 
                'skip': 0,
                'limit': comments_limit
                }
@@ -60,5 +51,21 @@ async def get_subfeddit_comments(
 
     data = res.json()
 
+    df = pd.DataFrame.from_dict( data['comments'])
+
+    # Filter by time range
+    if time_range:
+        df['datetime'] = pd.to_datetime(df['created_at'], unit='s')
+        df = df[df['datetime'] > datetime.datetime.now() - datetime.timedelta(minutes=time_range)]
+
+    # Get a polarity score for every text in the comments
+    df['polarity_score'] = df['text'].apply(get_polarity)
+    # Classify the comments based on the polarity score
+    df['classification'] = df['polarity_score'].apply(classify_polarity)
+
+    if sorted_results:
+        df = df.sort_values(by='polarity_score', ascending=False)
+
+    return df[['id', 'text', 'polarity_score', 'classification']].to_dict(orient='records')
 
 app.include_router(prefix_router)

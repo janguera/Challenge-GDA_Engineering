@@ -1,8 +1,5 @@
-// For format details, see https://aka.ms/devcontainer.json. For config options, see the
-// README at: https://github.com/devcontainers/templates/tree/main/src/python
 {
 	"name": "Python 3",
-	// Or use a Dockerfile or Docker Compose file. More info: https://containers.dev/guide/dockerfile
 	"image": "mcr.microsoft.com/devcontainers/python:0-3.11",
 	"features": {
 		"ghcr.io/devcontainers/features/azure-cli:1": {},
@@ -10,27 +7,21 @@
 		"ghcr.io/devcontainers/features/docker-outside-of-docker": {}
 	},
 
-	// Features to add to the dev container. More info: https://containers.dev/features.
-	// "features": {},
-
-	// Use 'forwardPorts' to make a list of ports inside the container available locally.
 	"forwardPorts": [8080,8300],
+	"runArgs": ["--network=host"],
 
-	// Use 'postCreateCommand' to run commands after the container is created.
 	"postCreateCommand": "pip3 install --user -r app/api/requirements.txt",
 
-	// Configure tool-specific properties.
 	"customizations": {
 		"vscode": {
 			"extensions": [		
-				"github.copilot"
+				"github.copilot",
+				"ms-python.debugpy",
+				"ms-python.python"
 			]
 		}
 	},
 	"mounts": [
 		"source=${localEnv:HOME}/.ssh,target=/home/vscode/.ssh,type=bind,consistency=cached"
 	]
-
-	// Uncomment to connect as root instead. More info: https://aka.ms/dev-containers-non-root.
-	// "remoteUser": "root"
 }
