@@ -12,7 +12,7 @@ services:
       test: ["CMD-SHELL", "pg_isready"]
       interval: 10s
       timeout: 5s
-      retries: 5
+      retries: 5 
   feddit:
     image: chasingcars/feddit:latest
     entrypoint: >
@@ -29,11 +29,17 @@ services:
     links:
       - "db:db"
     depends_on:
-      - db
+      - db    
   comment_classification:
     image: janguera/comment_classification
     container_name: comment_classification
     ports:
-      - "8000:8000"    
+      - "8000:8000"
     restart: unless-stopped
-    network_mode: host
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8000/subfeddit-api/version"]
+      interval: 1m30s
+      timeout: 10s
+      retries: 3
+    depends_on:
+      - feddit

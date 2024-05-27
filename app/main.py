@@ -17,12 +17,18 @@ host = host + Settings().api_version
 print('Initialising comment classification API')
 
 app = FastAPI(
-                openapi_url=f'{ROOT_PATH}/openapi.json',
-                docs_url = f'{ROOT_PATH}/docs',
-                redoc_url = f'{ROOT_PATH}/redoc',
-                default_response_class=ORJSONResponse
-              ) 
+        title="Comment Analysis API",
+        version="1.0.0",
+        openapi_url=f'{ROOT_PATH}/openapi.json',
+        docs_url = f'{ROOT_PATH}/docs',
+        redoc_url = f'{ROOT_PATH}/redoc',
+        default_response_class=ORJSONResponse
+    ) 
    
+@prefix_router.get("/version")
+async def get_version():
+    return {"version": app.version}
+
 @prefix_router.get('/number_of_subfeddits')
 async def get_number_of_subfeddits() -> int:
     """
